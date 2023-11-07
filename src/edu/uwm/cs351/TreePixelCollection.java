@@ -359,10 +359,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			
 			if (precursor == null)return report("precursor can not be null");
 			if(precursor.data == null && !precursor.equals(dummy))return report("precusor data null but not dummy");
-			if(precursor != null && precursor.data != null) {
+			if(precursor.data != null) {
 			Node pre = nextInTree(getRoot(),precursor.data.loc(),true,null);
-			if(pre == null || (!pre.equals(precursor)))return report("cursor not in tree");
+			if(pre == null ||(!pre.equals(precursor)))return report("cursor not in tree");
 			}
+			if (hasCurrent == true && precursor.next == null)return report("no current");
 			// (Any problems could be due to being stale, which is not our fault.)
 			// Then check the remaining parts of the invariant.  (See Homework description.)
 			return true;
