@@ -37,13 +37,13 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	
 	// TODO: Declare the private fields needed given the BST data structure
 	Node dummy;
-	int manyItems;
+	int size;
 	int version;
 	// TODO: define private getter for model field "root"
 	private Node getRoot() {
-		
-		return null;
+		return dummy.right;
 	}
+
 	/** Compare two points in column-major order.
 	 * @param p1 first point, must not be null
 	 * @param p2 second point, must not be null
@@ -105,7 +105,17 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	
 	private boolean wellFormed() {
 		// TODO: Read Homework description
-		
+		//1. check if dummy
+		if(dummy == null) return report("dummy can not be null");
+		if(dummy.data != null) return report("dummy can not be null");
+		if(dummy.left != null) return report ("dummy left node is not null ");
+		//2.check range
+		if(allInRange(getRoot(),null,null)==false) return false;
+		//3. check size
+		int s = countNodes(getRoot());
+		if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
+		//3. check next pointer
+		nextInTree(getRoot(),dummy.next.data.loc(),true,null);
 		// If no problems discovered, return true
 		return true;
 	}
@@ -242,7 +252,9 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		int colVersion;
 		
 		// TODO define getCursor() for model field 'cursor'
-
+		private Node getCursor() {
+			return null;
+		}
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
 			// Next, if the versions don't match, pretend there are no problems.
@@ -255,6 +267,16 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		
 		MyIterator() {
 			// Implement this constructor.  Don't forget to assert the invariant
+		}
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		@Override
+		public Pixel next() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 		// TODO iterator methods
@@ -369,5 +391,16 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			return myit.wellFormed();
 		}
 
+	}
+
+	@Override
+	public Iterator<Pixel> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
