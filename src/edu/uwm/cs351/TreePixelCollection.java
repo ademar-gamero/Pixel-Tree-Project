@@ -1,0 +1,368 @@
+package edu.uwm.cs351;
+
+import java.awt.Point;
+import java.util.AbstractCollection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.function.Consumer;
+
+
+/**
+ * An extensible Raster that satisfies {@link java.util.Collection} 
+ * and uses binary search trees internally.
+ */
+public class TreePixelCollection extends AbstractCollection<Pixel> 
+	// TODO: We need to implement something so that super.clone will work.
+{
+	private static Consumer<String> reporter = (s) -> System.out.println("Invariant error: "+ s);
+
+	private static boolean report(String error) {
+		reporter.accept(error);
+		return false;
+	}
+
+	private static class Node {
+		Pixel data;
+		Node left, right;
+		
+		Node(Pixel a) { data = a; }
+		
+		@Override //implementation
+		public String toString() {
+			return "Node(" + data + ")"; 
+		}
+	}
+	// TODO: You will need to add a 'next" field to the node class
+
+	// TODO: Declare the private fields needed given the BST data structure
+	
+	// TODO: define private getter for model field "root"
+
+	/** Compare two points in column-major order.
+	 * @param p1 first point, must not be null
+	 * @param p2 second point, must not be null
+	 * @return whether the first point comes before the second in
+	 * column-major order (first column, then row).
+	 */
+	private static boolean comesBefore(Point p1, Point p2) {
+		return p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y);		
+	}
+	
+	/**
+	 * Return the number of nodes in a subtree that has no cycles.
+	 * @param r root of the subtree to count nodes in, may be null
+	 * @return number of nodes in subtree
+	 */
+	private static int countNodes(Node r) {
+		if (r == null) return 0;
+		return 1 + countNodes(r.left) + countNodes(r.right);
+	}
+	
+	/**
+	 * Find the node that has the point (if acceptEqual) or the first thing
+	 * after it.  Return that node.  Return the alternate if everything in the subtree
+	 * comes before the given point.
+	 * @param r subtree to look into, may be null
+	 * @param target point to look for, must not be null
+	 * @param acceptEqual whether we accept something with this point.  Otherwise, only
+	 * Pixels after the point are accepted.
+	 * @param alt what to return if no node in subtree is acceptable.
+	 * @return node that has the first element equal (if acceptEqual) or after
+	 * the point.
+	 */
+	private static Node nextInTree(Node r, Point target, boolean acceptEqual, Node alt) {
+		if (r == null) return alt;
+		Point p = r.data.loc();
+		if (p.equals(target) && acceptEqual) return r;
+		if (comesBefore(target, p)) return nextInTree(r.left, target, acceptEqual, r);
+		return nextInTree(r.right, target, acceptEqual, alt);
+	}
+
+	/**
+	 * Return whether all the data in nodes in the subtree are non-null
+	 * and in the given range, and also in their respective subranges.
+	 * If there is a problem, one problem should be reported.
+	 * @param r root of subtree to check, may be null
+	 * @param lo exclusive lower bound, may be null (no lower bound)
+	 * @param hi exclusive upper bound, may be null (no upper bound)
+	 * @return whether any problems were found.
+	 * If a problem was found, it has been reported.
+	 */
+	private static boolean allInRange(Node r, Point lo, Point hi) {
+		if (r == null) return true;
+		if (r.data == null) return report("found null data in tree");
+		Point pt = r.data.loc();
+		if (lo != null && !comesBefore(lo, pt)) return report("Out of bound: " + r.data + " is not >= " + lo);
+		if (hi != null && !comesBefore(pt, hi)) return report("Out of bound: " + r.data + " is not < " + hi);
+		return allInRange(r.left, lo, pt) && allInRange(r.right, pt, hi);
+	}
+	
+	private boolean wellFormed() {
+		// TODO: Read Homework description
+		
+		// If no problems discovered, return true
+		return true;
+	}
+
+	// This is only for testing the invariant.  Do not change!
+	private TreePixelCollection(boolean testInvariant) { }
+
+	/**
+	 * Create an empty raster.
+	 */
+	public TreePixelCollection() {
+		// TODO: Implement the main constructor
+	}
+
+	/** Get a pixel from the raster.
+	 * @param x pixel from the left (zero based), must not be negative
+	 * @param y pixel from the top (zero based), must not be negative
+	 * @return the pixel at x,y, or null if no pixel.
+	 */
+	public Pixel getPixel(int x, int y) {
+		// TODO: Copy from Homework #8, but use root model field
+		return null;
+	}
+
+	/**
+	 * Insert a node into the subtree and return the (modified) subtree.
+	 * @param r root of subtree, may be null
+	 * @param p pixel to add to tree, must not be null and must not be in tree
+	 * @param before the last node before the ones in the subtree, never null
+	 * @return root of new subtree
+	 */
+	private Node doAdd(Node r, Pixel p, Node before) {
+		// TODO: recommended
+		// Very similar to the recursive doAdd done in lecture,
+		// but we add the "before" parameter to recursive calls,
+		// and then use it when we hit a null: "before" will be the node
+		// before where we need to be in the linked list.
+		return r;
+	}
+	
+	@Override // implementation
+	/**
+	 * Set a pixel in the raster.  Return whether a change was made.
+	 * If a pixel with the same coordinate was in the raster,
+	 * then the new pixel replaces this one.
+	 * @param p pixel to add, must not be null
+	 * @return whether a change was made to a pixel.
+	 */
+	public boolean add(Pixel element)
+	{
+		assert wellFormed() : "invariant failed at start of add";
+		boolean result = true;
+		// TODO: First see if there is a node already with same point,
+		// otherwise use the helper method
+		assert wellFormed() : "invariant failed at end of add";
+		return result;
+	}
+
+	/**
+	 * Remove the node from the BST that has a pixel with the given point.
+	 * This helper method will update size and version if a node is removed,
+	 * otherwise not.
+	 * @param r root of subtree to remove from, may be null
+	 * @param pt point to look for, must not be null
+	 * @param before last node before all nodes in subtree, must not be null
+	 * @return new subtree (without node with given point), may be null
+	 */
+	private Node doRemove(Node r, Point pt, Node before) {
+		// TODO: implement this helper method
+		return r;
+	}
+	
+	/**
+	 * Remove the pixel, if any, at the given coordinates.
+	 * Returns whether there was a pixel to remove.
+	 * @param x x-coordinate, must not be negative
+	 * @param y y-coordinate, must not be negative
+	 * @return whether anything was removed.
+	 */
+	public boolean clearAt(int x, int y) {
+		assert wellFormed() : "invariant broken in clearAt";
+		// conveniently getPixel checks the arguments for us.
+		if (getPixel(x,y) == null) return false; 
+		// TODO: use helper method
+		assert wellFormed() : "invariant broken by clearAt";
+		return true;
+	}
+
+	// TODO: Some Collection overridings.
+	// Make sure to comment reasons for any overrides.
+	
+	/**
+	 * Clone the given subtree
+	 * @param r subtree to clone, may be null
+	 * @return cloned subtree
+	 */
+	private Node doClone(Node r) {
+		return null; // TODO: Similar to but easier than Homework #8
+	}
+	
+	/**
+	 * Link up the nodes in the subtree and return the first
+	 * one (or the "after" if there are no nodes).
+	 * This will set the "next" fields in all the nodes
+	 * of the subtree.
+	 * @param r subtree to work on
+	 * @param after node closest after the subtree
+	 * @return the first node in subtree (or the after node if none)
+	 */
+	private Node doLink(Node r, Node after) {
+		return null; // TODO
+	}
+	
+	@Override // decorate (we use the superclass implementation, but do more)
+	public TreePixelCollection clone() {
+	    assert wellFormed() : "Invariant broken in clone";
+		TreePixelCollection result;
+		try {
+			result = (TreePixelCollection) super.clone();
+		} catch(CloneNotSupportedException ex) {
+			throw new IllegalStateException("did you forget to implement Cloneable?");
+		}
+		// TODO: Work to do.
+		// 1. Create new tree (as in Homework #8)
+		// 2. Link together all the nodes in the result.
+		assert result.wellFormed() : "invariant faield for new clone";
+		return result;
+	}
+
+	private class MyIterator implements Iterator<Pixel>
+	{
+		Node precursor;
+		boolean hasCurrent;
+		int colVersion;
+		
+		// TODO define getCursor() for model field 'cursor'
+
+		private boolean wellFormed() {
+			// First check outer invariant, and if that fails don't proceed further
+			// Next, if the versions don't match, pretend there are no problems.
+			// (Any problems could be due to being stale, which is not our fault.)
+			// Then check the remaining parts of the invariant.  (See Homework description.)
+			return true;
+		}
+		
+		MyIterator(boolean unused) {} // do not changethis iterator
+		
+		MyIterator() {
+			// Implement this constructor.  Don't forget to assert the invariant
+		}
+
+		// TODO iterator methods
+	}
+
+	/**
+	 * Class for internal testing.
+	 * Do not use in client/application code.
+	 * Do not change anything in this class.
+	 */
+	public static class Spy {
+		/**
+		 * Return the sink for invariant error messages
+		 * @return current reporter
+		 */
+		public Consumer<String> getReporter() {
+			return reporter;
+		}
+
+		/**
+		 * Change the sink for invariant error messages.
+		 * @param r where to send invariant error messages.
+		 */
+		public void setReporter(Consumer<String> r) {
+			reporter = r;
+		}
+
+		private static Pixel a = new Pixel(0, 0);
+		
+		/**
+		 * Class of nods for testing purposes.
+		 */		
+		public class Node extends TreePixelCollection.Node {
+			public Node(Pixel d, Node n1, Node n2, Node n3) {
+				super(a);
+				data = d;
+				left = n1;
+				right = n2;
+				next = n3;
+			}
+			public void setLeft(Node l) {
+				left = l;
+			}
+			public void setRight(Node r) {
+				right = r;
+			}
+			public void setNext(Node n) {
+				next = n;
+			}
+		}
+
+		/**
+		 * Create a node for testing.
+		 * @param a pixel, may be null
+		 * @param l left subtree, may be null
+		 * @param r right subtree, may be null
+		 * @param n next node, may be null
+		 * @return newly created test node
+		 */	
+		public Node newNode(Pixel a, Node l, Node r, Node n) {
+			return new Node(a, l, r, n);
+		}
+
+		/**
+		 * Create an instance of the ADT with give data structure.
+		 * This should only be used for testing.
+		 * @param d data array
+		 * @param s size
+		 * @param v current version
+		 * @return instance of the ADT with the given field values.
+		 */
+		public TreePixelCollection create(Node r, int s, int v) {
+			TreePixelCollection result = new TreePixelCollection(false);
+			result.dummy = r;
+			result.size = s;
+			result.version = v;
+			return result;
+		}
+
+		/**
+		 * Create an iterator for testing purposes.
+		 * @param outer outer object to create iterator for
+		 * @param p precursor of iterator
+		 * @param c whether the iterator has a current
+		 * @param cv version of collection this iterator is for
+		 * @return iterator to the raster
+		 */
+		public Iterator<Pixel> newIterator(TreePixelCollection outer, Node p, boolean c, int cv) {
+			MyIterator result = outer.new MyIterator(false);
+			result.precursor = p;
+			result.hasCurrent = c;
+			result.colVersion = cv;
+			return result;
+		}
+		
+		/**
+		 * Return whether the wellFormed routine returns true for the argument
+		 * @param s transaction seq to check.
+		 * @return
+		 */
+		public boolean wellFormed(TreePixelCollection s) {
+			return s.wellFormed();
+		}
+
+		/**
+		 * Return whether the wellFormed routine returns true for the argument
+		 * @param s transaction seq to check.
+		 * @return
+		 */
+		public boolean wellFormed(Iterator<Pixel> it) {
+			MyIterator myit = (MyIterator)it;
+			return myit.wellFormed();
+		}
+
+	}
+}
