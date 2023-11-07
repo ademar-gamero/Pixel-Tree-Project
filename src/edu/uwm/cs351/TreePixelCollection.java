@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+import edu.uwm.cs351.DynamicRaster.Node;
+
 //import edu.uwm.cs351.DynamicRaster.Node;
 
 
@@ -127,6 +129,30 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		//3. check size
 		int s = countNodes(getRoot());
 		if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
+		
+		//tortoise and hare cycle check
+		if (dummy.next != null) {
+			Node slow = dummy.next;
+			Node fast = dummy.next.next;
+			while (fast != null) {
+				if (slow == fast) return report("Found cycle in list");
+				slow = slow.next;
+				fast = fast.next;
+				if (fast != null) fast = fast.next;
+			}
+		}
+		
+		
+		int count = 0;
+		if(dummy.next != null) {
+		for(Node start = dummy.next; start != null;start = start.next) {
+			if(start != null)++count;
+			}
+		}
+		if (count != size)return report("linked list size incorrect");
+		
+		//4. tortoise and hare
+		
 		
 		//3. check next pointer
 	
