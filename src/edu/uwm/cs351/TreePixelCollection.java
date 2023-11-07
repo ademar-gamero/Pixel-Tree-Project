@@ -25,7 +25,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	private static class Node {
 		Pixel data;
 		Node left, right;
-		
+		Node next;
 		Node(Pixel a) { data = a; }
 		
 		@Override //implementation
@@ -34,11 +34,16 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		}
 	}
 	// TODO: You will need to add a 'next" field to the node class
-
-	// TODO: Declare the private fields needed given the BST data structure
 	
+	// TODO: Declare the private fields needed given the BST data structure
+	Node dummy;
+	int manyItems;
+	int version;
 	// TODO: define private getter for model field "root"
-
+	private Node getRoot() {
+		
+		return null;
+	}
 	/** Compare two points in column-major order.
 	 * @param p1 first point, must not be null
 	 * @param p2 second point, must not be null
