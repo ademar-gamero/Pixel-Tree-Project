@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-import edu.uwm.cs351.DynamicRaster.Node;
+//import edu.uwm.cs351.DynamicRaster.Node;
 
 //import edu.uwm.cs351.DynamicRaster.Node;
 
@@ -306,7 +306,61 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		}
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
+			if(dummy == null) return report("dummy can not be null");
+			if(dummy.data != null) return report("dummy can not be null");
+			if(dummy.left != null) return report ("dummy left node is not null");
+			
+			//2.check range
+			if(allInRange(getRoot(),null,null)==false) return false;
+			
+			//3. check size
+			int s = countNodes(getRoot());
+			if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
+			
+			//tortoise and hare cycle check
+			if (dummy.next != null) {
+				Node slow = dummy.next;
+				Node fast = dummy.next.next;
+				while (fast != null) {
+					if (slow == fast) return report("Found cycle in list");
+					slow = slow.next;
+					fast = fast.next;
+					if (fast != null) fast = fast.next;
+				}
+			}
+			
+			
+			int count = 0;
+			if(dummy.next != null) {
+			for(Node start = dummy.next; start != null;start = start.next) {
+				if(start != null)++count;
+				}
+			}
+			if (count != size)return report("linked list size incorrect");
+			
+			//4. tortoise and hare
+			
+			
+			//3. check next pointer
+		
+			if(dummy.next != firstInTree(getRoot()))return report("dummy.next does not equal first in tree");
+			if(dummy.next != null) {
+			for(Node start = dummy.next; start.next != null; start= start.next) {
+				Node after = nextInTree(getRoot(),start.data.loc(),false,null);
+				if (!start.next.equals(after))return report("next pointer is incorrect");
+				
+				}
+			}
 			// Next, if the versions don't match, pretend there are no problems.
+			int vers = 0;
+			if(colVersion != version) vers = 1;
+			//precursor check
+			
+			if(precursor == null && precursor != dummy)return report("precusor is null not set to the dummy");
+			if(precursor.data != null) {
+			Node pre = nextInTree(getRoot(),precursor.data.loc(),true,null);
+			if(pre == null || (!pre.equals(precursor)))return report("cursor not in tree");
+			}
 			// (Any problems could be due to being stale, which is not our fault.)
 			// Then check the remaining parts of the invariant.  (See Homework description.)
 			return true;
