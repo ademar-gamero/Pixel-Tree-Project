@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+//import edu.uwm.cs351.DynamicRaster.Node;
+
 
 /**
  * An extensible Raster that satisfies {@link java.util.Collection} 
@@ -103,19 +105,40 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		return allInRange(r.left, lo, pt) && allInRange(r.right, pt, hi);
 	}
 	
+	private static Node firstInTree(Node r) {
+		Node first = r;
+		for(Node s = r; s != null; s = s.left) {
+			first = s;
+		}
+		return first; // TODO: non-recursive is fine
+	}
+	
 	private boolean wellFormed() {
 		// TODO: Read Homework description
-		//1. check if dummy
+		
+		//1. check dummy
 		if(dummy == null) return report("dummy can not be null");
 		if(dummy.data != null) return report("dummy can not be null");
-		if(dummy.left != null) return report ("dummy left node is not null ");
+		if(dummy.left != null) return report ("dummy left node is not null");
+		
 		//2.check range
 		if(allInRange(getRoot(),null,null)==false) return false;
+		
 		//3. check size
 		int s = countNodes(getRoot());
 		if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
+		
 		//3. check next pointer
-		nextInTree(getRoot(),dummy.next.data.loc(),true,null);
+	
+		if(dummy.next != firstInTree(getRoot()))return report("dummy.next does not equal first in tree");
+		if(dummy.next != null) {
+		for(Node start = dummy.next; start.next != null; start= start.next) {
+			Node after = nextInTree(getRoot(),start.data.loc(),false,null);
+			if (!start.next.equals(after))return report("next pointer is incorrect");
+			
+			}
+		}
+		
 		// If no problems discovered, return true
 		return true;
 	}
