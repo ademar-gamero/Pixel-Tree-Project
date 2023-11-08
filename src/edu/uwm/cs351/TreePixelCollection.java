@@ -154,14 +154,13 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		//4. tortoise and hare
 		
 		
-		//3. check next pointer
+		//3. Next pointer
 	
 		if(dummy.next != firstInTree(getRoot()))return report("dummy.next does not equal first in tree");
 		if(dummy.next != null) {
 		for(Node start = dummy.next; start.next != null; start= start.next) {
 			Node after = nextInTree(getRoot(),start.data.loc(),false,null);
 			if (!start.next.equals(after))return report("next pointer is incorrect");
-			
 			}
 		}
 		
@@ -176,6 +175,9 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	 * Create an empty raster.
 	 */
 	public TreePixelCollection() {
+		this.dummy = new Node(null);
+		this.size = 0;
+		this.version = 0;
 		// TODO: Implement the main constructor
 	}
 
@@ -185,6 +187,12 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	 * @return the pixel at x,y, or null if no pixel.
 	 */
 	public Pixel getPixel(int x, int y) {
+		assert wellFormed():"invariant broken before getPixel";
+		if(x < 0)throw new IllegalArgumentException("x cant be negative");
+		if(y < 0)throw new IllegalArgumentException("y cant be negative");
+		Point p = new Point(x,y);
+		Node n = nextInTree(getRoot(),p,true,null);
+		if(n != null && n.data.loc().equals(p))return n.data;
 		// TODO: Copy from Homework #8, but use root model field
 		return null;
 	}
@@ -217,6 +225,16 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	{
 		assert wellFormed() : "invariant failed at start of add";
 		boolean result = true;
+		Node n = nextInTree(getRoot(),element.loc(),true,null);
+		if(n != null) {
+		if(n.data.equals(element))return false;
+			if(n.data.loc().equals(element.loc())&&n.data.color().equals(element.color())) {
+			n.data = element;
+			}
+		}
+		
+		
+		
 		// TODO: First see if there is a node already with same point,
 		// otherwise use the helper method
 		assert wellFormed() : "invariant failed at end of add";
