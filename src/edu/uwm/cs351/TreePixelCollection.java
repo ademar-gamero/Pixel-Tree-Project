@@ -210,6 +210,18 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		// but we add the "before" parameter to recursive calls,
 		// and then use it when we hit a null: "before" will be the node
 		// before where we need to be in the linked list.
+		if(r == null) {
+			r = new Node(p);
+			r.next = before.next;
+			before.next = r;
+		}
+		if(comesBefore(p.loc(),r.data.loc())== true) {
+			r.left = doAdd(r.left, p,before);
+		}
+		else {
+			r.right = doAdd(r.right,p,r);
+		}
+		
 		return r;
 	}
 	
@@ -232,7 +244,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			n.data = element;
 			}
 		}
-		
+		doAdd(getRoot(), element, dummy);
 		
 		
 		// TODO: First see if there is a node already with same point,
