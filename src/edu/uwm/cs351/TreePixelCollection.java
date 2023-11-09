@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * An extensible Raster that satisfies {@link java.util.Collection} 
  * and uses binary search trees internally.
  */
-public class TreePixelCollection extends AbstractCollection<Pixel> 
+public class TreePixelCollection extends AbstractCollection<Pixel> implements Cloneable
 	// TODO: We need to implement something so that super.clone will work.
 {
 	private static Consumer<String> reporter = (s) -> System.out.println("Invariant error: "+ s);
@@ -142,7 +142,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			}
 		}
 		
-		
+		// linked list size check
 		int count = 0;
 		if(dummy.next != null) {
 		for(Node start = dummy.next; start != null;start = start.next) {
@@ -151,7 +151,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		}
 		if (count != size)return report("linked list size incorrect");
 		
-		//4. tortoise and hare
 		
 		
 		//3. Next pointer
@@ -288,9 +287,55 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	 * @return new subtree (without node with given point), may be null
 	 */
 	private Node doRemove(Node r, Point pt, Node before) {
+		
+		if(r == null)return r;
+		
+		if(r.data.loc().equals(pt)) {
+			
+			if(r.right == null && r.left == null) {
+				before.next = r.next;
+				r = null;
+				return r;
+			}
+			if(r.right == null) {
+				
+				r = r.left;
+				r.next = r.next.next;
+				return r;
+			}
+			if(r.left == null) {
+				before.next = r.next;
+				r = r.right;
+				
+				return r;
+			}
+			Node s =r.right;
+			while(s.left != null) {
+				s = s.left;	
+			}
+			r.data = s.data;
+			r.right = doRemove(r.right,s.data.loc(), r);
+		}
+		
+		if(comesBefore(pt,r.data.loc())== true) {
+			r.left = doRemove(r.left, pt,before);
+		}
+		else {
+			r.right = doRemove(r.right,pt,r);
+		}
+		
+		
 		// TODO: implement this helper method
-		
-		
+//		Node l = r.left;
+//		Node right = r.right;
+//		Node nxt = nextInTree(getRoot(),pt,false,null);
+//		before.next = r.next;
+//		r = nxt;
+//		if(r!= null) {
+//		r.right = right;
+//		r.left = r.left;
+//		}
+//		nxt = null;
 		return r;
 	}
 	
@@ -305,6 +350,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		assert wellFormed() : "invariant broken in clearAt";
 		// conveniently getPixel checks the arguments for us.
 		if (getPixel(x,y) == null) return false; 
+		Point delete = new Point(x,y);
+		//Node del = nextInTree(getRoot(),delete,true,null);
+		
+		dummy.right = doRemove(getRoot(),delete,dummy);
+		size--;
 		// TODO: use helper method
 		assert wellFormed() : "invariant broken by clearAt";
 		return true;
@@ -395,9 +445,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			// TODO Auto-generated method stub
 			assert wellFormed():"invariant broken before hasNext";
 			if (colVersion != version) throw new ConcurrentModificationException("version and colVersion dont line up in hasNext()"); 
+		
 			if(precursor.next == null) {
 				return false;
 			}
+			hasCurrent = true;
 			return true;
 		}
 		@Override
@@ -406,6 +458,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			assert wellFormed():"invariant broken before next";
 			if(hasNext()==false)throw new NoSuchElementException("no current");
 			precursor = getCursor();
+			hasCurrent = false;
 			return precursor.data;
 		}
 		
