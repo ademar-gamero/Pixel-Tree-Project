@@ -359,7 +359,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		
 		// TODO define getCursor() for model field 'cursor'
 		private Node getCursor() {
-			return null;
+			return precursor.next;
 		}
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
@@ -393,9 +393,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		@Override
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			if(precursor.next == null)return false;
-			hasCurrent = true;
 			assert wellFormed():"invariant broken before hasNext";
+			if (colVersion != version) throw new ConcurrentModificationException("version and colVersion dont line up in hasNext()"); 
+			if(precursor.next == null) {
+				return false;
+			}
 			return true;
 		}
 		@Override
@@ -403,8 +405,8 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			// TODO Auto-generated method stub
 			assert wellFormed():"invariant broken before next";
 			if(hasNext()==false)throw new NoSuchElementException("no current");
-			precursor = precursor.next.next;
-			return precursor.next.data;
+			precursor = getCursor();
+			return precursor.data;
 		}
 		
 		
