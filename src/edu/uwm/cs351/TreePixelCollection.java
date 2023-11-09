@@ -128,7 +128,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		
 		//3. check size
 		int s = countNodes(getRoot());
-		if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
+		if (s != size) return report("our size is " + size + " but our actual size is " + s);
 		
 		//tortoise and hare cycle check
 		if (dummy.next != null) {
@@ -214,6 +214,17 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			r = new Node(p);
 			r.next = before.next;
 			before.next = r;
+			if (before.equals(dummy)){
+				Node roo = before.right;
+				roo.left = r;
+			}
+			else if(comesBefore(before.data.loc(),r.data.loc())) {
+				before.right = r;
+			}
+			else {
+				before.left = r;
+			}
+			return r;
 		}
 		if(comesBefore(p.loc(),r.data.loc())== true) {
 			r.left = doAdd(r.left, p,before);
@@ -237,16 +248,30 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	{
 		assert wellFormed() : "invariant failed at start of add";
 		boolean result = true;
+		if(element.loc().x < 0|| element.loc().y < 0)throw new IllegalArgumentException("cant add a negative loc to the raster");
 		Node n = nextInTree(getRoot(),element.loc(),true,null);
 		if(n != null) {
-		if(n.data.equals(element))return false;
-			if(n.data.loc().equals(element.loc())&&n.data.color().equals(element.color())) {
+		if(n.data.color().equals(element.color())&& n.data.loc().equals(element.loc())) {
+			assert wellFormed() : "invariant failed at end of add";
+			return false;
+		}
+			if(n.data.loc().equals(element.loc())) {
 			n.data = element;
+			assert wellFormed() : "invariant failed at end of add";
+			return true;
 			}
 		}
-		doAdd(getRoot(), element, dummy);
 		
-		
+		if (getRoot() != null) {
+		dummy.right = doAdd(getRoot(), element, dummy);
+		}
+		else {
+			Node s = new Node(element);
+			dummy.right = s;
+			dummy.next = s;
+		}
+		size++;
+		version++;
 		// TODO: First see if there is a node already with same point,
 		// otherwise use the helper method
 		assert wellFormed() : "invariant failed at end of add";
@@ -337,51 +362,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
 			if(TreePixelCollection.this.wellFormed()==false)return false;
-//			if(dummy == null) return report("dummy can not be null");
-//			if(dummy.data != null) return report("dummy can not be null");
-//			if(dummy.left != null) return report ("dummy left node is not null");
-//			
-//			//2.check range
-//			if(allInRange(getRoot(),null,null)==false) return false;
-//			
-//			//3. check size
-//			int s = countNodes(getRoot());
-//			if (s != size) return report("our manyItems is " + size + " but our actual size is " + size);
-//			
-//			//tortoise and hare cycle check
-//			if (dummy.next != null) {
-//				Node slow = dummy.next;
-//				Node fast = dummy.next.next;
-//				while (fast != null) {
-//					if (slow == fast) return report("Found cycle in list");
-//					slow = slow.next;
-//					fast = fast.next;
-//					if (fast != null) fast = fast.next;
-//				}
-//			}
-//			
-//			
-//			int count = 0;
-//			if(dummy.next != null) {
-//			for(Node start = dummy.next; start != null;start = start.next) {
-//				if(start != null)++count;
-//				}
-//			}
-//			if (count != size)return report("linked list size incorrect");
-//			
-//			//4. tortoise and hare
-//			
-//			
-//			//3. check next pointer
-//		
-//			if(dummy.next != firstInTree(getRoot()))return report("dummy.next does not equal first in tree");
-//			if(dummy.next != null) {
-//			for(Node start = dummy.next; start.next != null; start= start.next) {
-//				Node after = nextInTree(getRoot(),start.data.loc(),false,null);
-//				if (!start.next.equals(after))return report("next pointer is incorrect");
-//				
-//				}
-//			}
+
 			// Next, if the versions don't match, pretend there are no problems.
 			
 			if(colVersion != version) return true;
@@ -537,6 +518,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	@Override
 	public int size() {
 		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 }
