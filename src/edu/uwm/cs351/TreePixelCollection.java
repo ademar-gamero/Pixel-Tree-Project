@@ -289,6 +289,8 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	 */
 	private Node doRemove(Node r, Point pt, Node before) {
 		// TODO: implement this helper method
+		
+		
 		return r;
 	}
 	
@@ -380,22 +382,36 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 			return true;
 		}
 		
-		MyIterator(boolean unused) {} // do not changethis iterator
+		MyIterator(boolean unused) {} // do not change this iterator
 		
 		MyIterator() {
+			colVersion = version;
+			hasCurrent = false;
+			precursor = dummy;
 			// Implement this constructor.  Don't forget to assert the invariant
 		}
 		@Override
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
-			return false;
+			if(precursor.next == null)return false;
+			hasCurrent = true;
+			assert wellFormed():"invariant broken before hasNext";
+			return true;
 		}
 		@Override
 		public Pixel next() {
 			// TODO Auto-generated method stub
-			return null;
+			assert wellFormed():"invariant broken before next";
+			if(hasNext()==false)throw new NoSuchElementException("no current");
+			precursor = precursor.next.next;
+			return precursor.next.data;
 		}
-
+		
+		
+		@Override
+		public void remove() {
+			return;
+		}
 		// TODO iterator methods
 	}
 
@@ -513,7 +529,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel>
 	@Override
 	public Iterator<Pixel> iterator() {
 		// TODO Auto-generated method stub
-		return null;
+		return new MyIterator();
 	}
 	@Override
 	public int size() {
