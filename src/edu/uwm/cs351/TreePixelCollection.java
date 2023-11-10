@@ -159,7 +159,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		if(dummy.next != null) {
 		for(Node start = dummy.next; start.next != null; start= start.next) {
 			Node after = nextInTree(getRoot(),start.data.loc(),false,null);
-			if (!start.next.equals(after))return report("next pointer is incorrect");
+			if (!start.next.equals(after))return report(start + " does not equal after: "+after +"next pointer is incorrect");
 			}
 		}
 		
@@ -423,6 +423,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		private Node getCursor() {
 			return precursor.next;
 		}
+		
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
 			if(TreePixelCollection.this.wellFormed()==false)return false;
@@ -450,33 +451,50 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			colVersion = version;
 			hasCurrent = false;
 			precursor = dummy;
+			assert wellFormed():"invariant broken in the constructor";
 			// Implement this constructor.  Don't forget to assert the invariant
 		}
-		@Override
+		@Override//required
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
 			assert wellFormed():"invariant broken before hasNext";
 			if (colVersion != version) throw new ConcurrentModificationException("version and colVersion dont line up in hasNext()"); 
 		
-			if(precursor.next == null) {
+			if(precursor == dummy && precursor.next == null) {
 				return false;
+			}
+			if(precursor == dummy && precursor.next != null) {
+				hasCurrent = false;
+				return true;
 			}
 			hasCurrent = true;
 			return true;
 		}
-		@Override
+		@Override//required
 		public Pixel next() {
 			// TODO Auto-generated method stub
 			assert wellFormed():"invariant broken before next";
-			if(hasNext()==false)throw new NoSuchElementException("no current");
-			precursor = getCursor();
-			hasCurrent = false;
-			return precursor.data;
+			if(hasNext() == false)throw new NoSuchElementException("no current");
+			if (hasCurrent == true) {
+				precursor = getCursor();
+			}
+			else if(hasCurrent = false) {
+				hasCurrent = true;
+			}
+			return getCursor().data;
 		}
 		
 		
-		@Override
+		@Override//required
 		public void remove() {
+			assert wellFormed():"invariant broken before remove()";
+			if(precursor == null)throw new IllegalStateException("cant remove without curr");
+	
+
+
+			size--;
+			colVersion = version;
+			assert wellFormed():"invarian broken in remove()";
 			return;
 		}
 		// TODO iterator methods
