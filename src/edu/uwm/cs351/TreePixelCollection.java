@@ -463,9 +463,17 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			if(precursor == dummy && precursor.next == null) {
 				return false;
 			}
-			if(precursor == dummy && precursor.next != null) {
-				hasCurrent = false;
+			if(precursor == dummy && precursor.next != null && hasCurrent == false) {
 				return true;
+			}
+			if(precursor != dummy && precursor.next == null) {
+				return false;
+			}
+			if(precursor.next != null && hasCurrent == true && precursor.next.next == null) {
+				return false;
+			}
+			if(precursor.next.next == null) {
+				return false;
 			}
 			hasCurrent = true;
 			return true;
@@ -477,8 +485,9 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			if(hasNext() == false)throw new NoSuchElementException("no current");
 			if (hasCurrent == true) {
 				precursor = getCursor();
+				hasCurrent = false;
 			}
-			else if(hasCurrent = false) {
+			else if(hasCurrent == false) {
 				hasCurrent = true;
 			}
 			return getCursor().data;
