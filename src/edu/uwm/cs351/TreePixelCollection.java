@@ -398,7 +398,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @return cloned subtree
 	 */
 	private Node doClone(Node r) {
-		return null; // TODO: Similar to but easier than Homework #8
+		if(r == null)return null;
+		Node copy = new Node(r.data);
+		copy.left = doClone(r.left);
+		copy.right = doClone(r.right);
+		return copy; // TODO: Similar to but easier than Homework #8
 	}
 	
 	/**
@@ -426,7 +430,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		// TODO: Work to do.
 		// 1. Create new tree (as in Homework #8)
 		// 2. Link together all the nodes in the result.
-		assert result.wellFormed() : "invariant faield for new clone";
+		assert result.wellFormed() : "invariant failed for new clone";
 		return result;
 	}
 
