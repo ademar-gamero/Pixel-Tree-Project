@@ -355,6 +355,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		
 		dummy.right = doRemove(getRoot(),delete,dummy);
 		size--;
+		version++;
 		// TODO: use helper method
 		assert wellFormed() : "invariant broken by clearAt";
 		return true;
@@ -362,6 +363,17 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 
 	// TODO: Some Collection overridings.
 	// Make sure to comment reasons for any overrides.
+	
+	
+	@Override //effeciency(no longer need a loop)
+	public void clear() {
+		assert wellFormed():"invariant broken before clear";
+		size = 0;
+		version++;
+		dummy.right = null;
+		dummy.next = null;
+		assert wellFormed():"invariant broken in clear";
+	} 
 	
 	/**
 	 * Clone the given subtree
