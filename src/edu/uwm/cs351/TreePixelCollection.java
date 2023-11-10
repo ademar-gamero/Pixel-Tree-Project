@@ -298,7 +298,24 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 				return r;
 			}
 			if(r.right == null) {
-				
+				if(dummy.right == r) {
+					r = r.left;
+					Node s = r;
+					while(s.right != null) {
+						s = s.right;
+					}
+					s.next = null;
+					return r;
+				}
+//				if(dummy.right == r) {
+//					Node s =r.left;
+//					while(s.right != null) {
+//						s = s.right;
+//					}
+//						r.data = s.data;
+//						r.left = doRemove(r.left,s.data.loc(), before);		
+//						return r;
+//				}
 				r = r.left;
 				r.next = r.next.next;
 				return r;
@@ -472,6 +489,9 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			if(precursor.next != null && hasCurrent == true && precursor.next.next == null) {
 				return false;
 			}
+			if(precursor.next != null && hasCurrent == false && precursor != dummy) {
+				return true;
+			}
 			if(precursor.next.next == null) {
 				return false;
 			}
@@ -483,27 +503,32 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			// TODO Auto-generated method stub
 			assert wellFormed():"invariant broken before next";
 			if(hasNext() == false)throw new NoSuchElementException("no current");
+			if (colVersion != version) throw new ConcurrentModificationException("version and colVersion dont line up in hasNext()"); 
+			
 			if (hasCurrent == true) {
-				precursor = getCursor();
-				hasCurrent = false;
+				precursor = precursor.next;
 			}
 			else if(hasCurrent == false) {
 				hasCurrent = true;
 			}
-			return getCursor().data;
+			return precursor.next.data;
 		}
 		
 		
 		@Override//required
 		public void remove() {
 			assert wellFormed():"invariant broken before remove()";
-			if(precursor == null)throw new IllegalStateException("cant remove without curr");
-	
+			if (colVersion != version) throw new ConcurrentModificationException("version and colVersion dont line up in hasNext()"); 
+			
+			if(hasCurrent == false)throw new IllegalStateException("cant remove without cur");
 
-
+			Point del = getCursor().data.loc();
+			dummy.right = doRemove(getRoot(),del,dummy);
+			version++;
+			hasCurrent = false;
 			size--;
 			colVersion = version;
-			assert wellFormed():"invarian broken in remove()";
+			assert wellFormed():"invariant broken in remove()";
 			return;
 		}
 		// TODO iterator methods
