@@ -415,7 +415,9 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @return the first node in subtree (or the after node if none)
 	 */
 	private Node doLink(Node r, Node after) {
-		return null; // TODO
+		if(r==null)return null;
+		r.next = doLink(r,nextInTree(getRoot(),r.data.loc(),false,null));
+		return r; // TODO
 	}
 	
 	@Override // decorate (we use the superclass implementation, but do more)
@@ -429,6 +431,8 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		}
 		// TODO: Work to do.
 		// 1. Create new tree (as in Homework #8)
+		result.dummy.right = doClone(dummy.right);
+		result.dummy.right = doLink(dummy,getRoot());
 		// 2. Link together all the nodes in the result.
 		assert result.wellFormed() : "invariant failed for new clone";
 		return result;
