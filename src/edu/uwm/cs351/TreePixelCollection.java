@@ -286,6 +286,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param before last node before all nodes in subtree, must not be null
 	 * @return new subtree (without node with given point), may be null
 	 */
+	//given by boyland and worked with peter,joey,tutors in tutoring center
 	private Node doRemove(Node r, Point pt, Node before) {
 		
 		if(r == null)return r;
@@ -297,16 +298,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 				r = null;
 				return r;
 			}
-			if(r.right == null) {
-				if(dummy.right == r) {
-					r = r.left;
-					Node s = r;
+			if(r.right == null) {		
+					Node s = r.left;
 					while(s.right != null) {
 						s = s.right;
 					}
-					s.next = null;
-					return r;
-				}
 //				if(dummy.right == r) {
 //					Node s =r.left;
 //					while(s.right != null) {
@@ -316,22 +312,18 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 //						r.left = doRemove(r.left,s.data.loc(), before);		
 //						return r;
 //				}
-				r = r.left;
-				r.next = r.next.next;
-				return r;
+				
+				s.next = r.next;
+				return r.left;
 			}
 			if(r.left == null) {
 				before.next = r.next;
-				r = r.right;
 				
-				return r;
+				
+				return r.right;
 			}
-			Node s =r.right;
-			while(s.left != null) {
-				s = s.left;	
-			}
-			r.data = s.data;
-			r.right = doRemove(r.right,s.data.loc(), r);
+			r.data = r.next.data;
+			r.right = doRemove(r.right,r.data.loc(), r);
 		}
 		
 		if(comesBefore(pt,r.data.loc())== true) {
@@ -505,7 +497,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			if(precursor.next.next == null) {
 				return false;
 			}
-			//hasCurrent = true;
+			hasCurrent = true;
 			return true;
 		}
 		@Override//required
