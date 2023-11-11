@@ -443,7 +443,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param after node closest after the subtree
 	 * @return the first node in subtree (or the after node if none)
 	 */
-	//worked with peter,joey, and tutors
+	//worked with peter,joey, and tutors. Recieved help from chatgpt.
 	private Node doLink(Node r, Node after) {
 		if(r == null) return after;
 		
