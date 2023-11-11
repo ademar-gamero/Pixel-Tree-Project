@@ -149,7 +149,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			if(start != null)++count;
 			}
 		}
-		if (count != size)return report("linked list size incorrect");
+		if (count != size)return report("linked list size incorrect actual count is " + count + " size is "+size);
 		
 		
 		
@@ -369,10 +369,45 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		assert wellFormed() : "invariant broken by clearAt";
 		return true;
 	}
-
+	
+	
 	// TODO: Some Collection overridings.
 	// Make sure to comment reasons for any overrides.
-	
+
+	//worked with Peter
+	@Override//effeciency
+	public boolean contains(Object o) {
+		// TODO Auto-generated method stub
+		if(!(o instanceof Pixel))return false;
+		Node e  = getRoot();
+		while(e!= null) {
+			if(e.data.equals(o))return true;
+			
+		
+		if(comesBefore(((Pixel) o).loc(),e.data.loc())) {
+			e = e.left;
+		}
+		else {
+			e= e.right;
+			}
+		}
+		return false;
+	}
+
+	//worked with Peter
+	@Override//effecieny
+	public boolean remove(Object o) {
+		// TODO Auto-generated method stub
+		if(!(o instanceof Pixel))return false;
+		Pixel del = (Pixel) o;
+		Pixel actual = getPixel(del.loc().x,del.loc().y);
+		if(actual != null) {
+		if(actual.equals(del)) {
+			return clearAt(del.loc().x,del.loc().y);
+			}
+		}
+		return false;
+	}
 	
 	@Override //effeciency(no longer need a loop)
 	public void clear() {
@@ -389,6 +424,8 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param r subtree to clone, may be null
 	 * @return cloned subtree
 	 */
+	
+	//worked with peter,joey,and tutors
 	private Node doClone(Node r) {
 		if(r == null)return null;
 		Node copy = new Node(r.data);
@@ -406,14 +443,22 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param after node closest after the subtree
 	 * @return the first node in subtree (or the after node if none)
 	 */
+	//worked with peter,joey, and tutors
 	private Node doLink(Node r, Node after) {
-		if(after ==null)return null;
-		r.next = after;
-		doLink(after, nextInTree(getRoot(),after.data.loc(),false,null) );
-		return r; // TODO
+		if(r == null) return after;
+		
+		Node first = doLink(r.left, r);
+		r.next =  doLink(r.right,after);
+		return first;
+		
+//		if(after == null)return null;
+//		r.next = after;
+//		doLink(after, nextInTree(getRoot(),after.data.loc(),false,null));
+//		return r; // TODO
 	}
 	
-	@Override // decorate (we use the superclass implementation, but do more)
+	//worked with peter,joey, and tutors
+	@Override // decorate (we use the superclass implementation, but do more) implementation
 	public TreePixelCollection clone() {
 	    assert wellFormed() : "Invariant broken in clone";
 		TreePixelCollection result;
@@ -425,13 +470,14 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		// TODO: Work to do.
 		// 1. Create new tree (as in Homework #8)
 		result.dummy = doClone(dummy);
-		result.doLink(result.dummy,firstInTree(result.getRoot()));
+		result.dummy.next = doLink(result.dummy.right,null);
 		// 2. Link together all the nodes in the result.
 		assert result.wellFormed();
 		assert wellFormed();
 		return result;
 	}
 
+	
 	private class MyIterator implements Iterator<Pixel>
 	{
 		Node precursor;
@@ -473,6 +519,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			assert wellFormed():"invariant broken in the constructor";
 			// Implement this constructor.  Don't forget to assert the invariant
 		}
+		
 		@Override//required
 		public boolean hasNext() {
 			// TODO Auto-generated method stub
@@ -647,12 +694,12 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 
 	}
 
-	@Override
+	@Override // required
 	public Iterator<Pixel> iterator() {
 		// TODO Auto-generated method stub
 		return new MyIterator();
 	}
-	@Override
+	@Override // required
 	public int size() {
 		// TODO Auto-generated method stub
 		return size;
