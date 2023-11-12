@@ -115,6 +115,8 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		return first; // TODO: non-recursive is fine
 	}
 	
+	//worked with mohsin and tutors
+	//worked with George and Hassan
 	private boolean wellFormed() {
 		// TODO: Read Homework description
 		
@@ -185,6 +187,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param y pixel from the top (zero based), must not be negative
 	 * @return the pixel at x,y, or null if no pixel.
 	 */
+	//got from hw8
 	public Pixel getPixel(int x, int y) {
 		assert wellFormed():"invariant broken before getPixel";
 		if(x < 0)throw new IllegalArgumentException("x cant be negative");
@@ -203,6 +206,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @param before the last node before the ones in the subtree, never null
 	 * @return root of new subtree
 	 */
+	//used lecture notes to complete and activity 9
 	private Node doAdd(Node r, Pixel p, Node before) {
 		// TODO: recommended
 		// Very similar to the recursive doAdd done in lecture,
@@ -287,6 +291,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @return new subtree (without node with given point), may be null
 	 */
 	//given by boyland and worked with peter,joey,tutors in tutoring center
+	//worked with Hassan and George
 	private Node doRemove(Node r, Point pt, Node before) {
 		
 		if(r == null)return r;
@@ -303,16 +308,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 					while(s.right != null) {
 						s = s.right;
 					}
-//				if(dummy.right == r) {
-//					Node s =r.left;
-//					while(s.right != null) {
-//						s = s.right;
-//					}
-//						r.data = s.data;
-//						r.left = doRemove(r.left,s.data.loc(), before);		
-//						return r;
-//				}
-				
 				s.next = r.next;
 				return r.left;
 			}
@@ -333,18 +328,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			r.right = doRemove(r.right,pt,r);
 		}
 		
-		
-		// TODO: implement this helper method
-//		Node l = r.left;
-//		Node right = r.right;
-//		Node nxt = nextInTree(getRoot(),pt,false,null);
-//		before.next = r.next;
-//		r = nxt;
-//		if(r!= null) {
-//		r.right = right;
-//		r.left = r.left;
-//		}
-//		nxt = null;
 		return r;
 	}
 	
@@ -359,9 +342,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		assert wellFormed() : "invariant broken in clearAt";
 		// conveniently getPixel checks the arguments for us.
 		if (getPixel(x,y) == null) return false; 
-		Point delete = new Point(x,y);
-		//Node del = nextInTree(getRoot(),delete,true,null);
-		
+		Point delete = new Point(x,y);	
 		dummy.right = doRemove(getRoot(),delete,dummy);
 		size--;
 		version++;
@@ -374,10 +355,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	// TODO: Some Collection overridings.
 	// Make sure to comment reasons for any overrides.
 
-	//worked with Peter
+	//worked with Peter, Mohsin
 	@Override//effeciency
 	public boolean contains(Object o) {
 		// TODO Auto-generated method stub
+		assert wellFormed():"broken before contains";
 		if(!(o instanceof Pixel))return false;
 		Node e  = getRoot();
 		while(e!= null) {
@@ -394,10 +376,11 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		return false;
 	}
 
-	//worked with Peter
+	//worked with Peter, Mohsin
 	@Override//effecieny
 	public boolean remove(Object o) {
 		// TODO Auto-generated method stub
+		assert wellFormed():"invariant broken before removed";
 		if(!(o instanceof Pixel))return false;
 		Pixel del = (Pixel) o;
 		Pixel actual = getPixel(del.loc().x,del.loc().y);
@@ -406,8 +389,10 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			return clearAt(del.loc().x,del.loc().y);
 			}
 		}
+		assert wellFormed():"invariant broken before removed";
 		return false;
 	}
+	
 	
 	@Override //effeciency(no longer need a loop)
 	public void clear() {
@@ -425,7 +410,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	 * @return cloned subtree
 	 */
 	
-	//worked with peter,joey,and tutors
+	//worked with peter,joey, and tutors
 	private Node doClone(Node r) {
 		if(r == null)return null;
 		Node copy = new Node(r.data);
@@ -451,10 +436,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		r.next =  doLink(r.right,after);
 		return first;
 		
-//		if(after == null)return null;
-//		r.next = after;
-//		doLink(after, nextInTree(getRoot(),after.data.loc(),false,null));
-//		return r; // TODO
 	}
 	
 	//worked with peter,joey, and tutors
@@ -472,7 +453,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 		result.dummy = doClone(dummy);
 		result.dummy.next = doLink(result.dummy.right,null);
 		// 2. Link together all the nodes in the result.
-		assert result.wellFormed();
+		assert result.wellFormed(): "Invariant broken in result";
 		assert wellFormed();
 		return result;
 	}
@@ -489,6 +470,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			return precursor.next;
 		}
 		
+		//worked with tutors
 		private boolean wellFormed() {
 			// First check outer invariant, and if that fails don't proceed further
 			if(TreePixelCollection.this.wellFormed()==false)return false;
@@ -560,6 +542,7 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 			else if(hasCurrent == false) {
 				hasCurrent = true;
 			}
+			assert wellFormed():"invariant broken in next";
 			return precursor.next.data;
 		}
 		
@@ -697,11 +680,13 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	@Override // required
 	public Iterator<Pixel> iterator() {
 		// TODO Auto-generated method stub
+		assert wellFormed():"broken before iterator";
 		return new MyIterator();
 	}
 	@Override // required
 	public int size() {
 		// TODO Auto-generated method stub
+		assert wellFormed():"broken before size";
 		return size;
 	}
 }
