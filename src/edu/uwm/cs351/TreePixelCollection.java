@@ -116,7 +116,6 @@ public class TreePixelCollection extends AbstractCollection<Pixel> implements Cl
 	}
 	
 	//worked with mohsin and tutors
-	//worked with George and Hassan
 	private boolean wellFormed() {
 		// TODO: Read Homework description
 		
