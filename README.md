@@ -38,14 +38,16 @@ Friday 10pm deadline.*
 ### Review
 
 Did I correctly anticipate the difficulties?
-
+**Yes and No, Some parts were familiar but I knew implementing recursion is always tricky. This homework was tougher but with the help of tutors I was able to complete it**
 How did the plan go?
-
+**The plan went okay. I was able to complete the beginning parts.**
 ### Preview
 
 What should I do differently for next week's homework assignment?
+**Not miss a single day of class but otherwise I used the sources at my disposal this week**
 
 Do I need more resources?
+**No**
 
 ## Comments (optional)
 
